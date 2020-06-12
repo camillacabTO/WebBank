@@ -1,0 +1,36 @@
+<form action="/openaccount" method="POST" id="select-operation" onsubmit=" return checkSubmit()">
+    <nav class="navbar navbar-expand-lg mb-1 justify-content-center">
+        <div class="form-check form-check-inline">
+            <input type="radio" class="form-check-input ml-5" id="balance" name="operation" value="balance">
+            <label class="form-check-label" for="balance">Balance</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input type="radio" class="form-check-input ml-5" id="deposit"name="operation" value="deposit">
+            <label class="form-check-label" for="deposit">Deposit</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input type="radio" class="form-check-input ml-5" id="open-account"name="operation" value="open-account">
+            <label class="form-check-label" for="open=account" aria-checked="true">Open an Account</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input type="radio" class="form-check-input ml-5" id="withdrawal"name="operation" value="withdrawal">
+            <label class="form-check-label" for="withdrawal">Withdrawal</label>
+        </div>
+    </nav>
+    <h6 >Logged in as: {{ activeUser }}</h6>
+    <section class="justify-content-center">
+        <img src="/images/banklogo.png" alt="banklogo" class="mx-auto d-block my-4">
+        <div class="alert alert-danger text-center" id="invalid-msg">
+            Invalid Account Number
+        </div>
+        {{#if accountCreated}}
+            <div class="alert alert-primary text-center">
+            {{accountType}} account #{{createAccountNumber}} Created!
+            </div>
+        {{/if}}
+    </section>
+    <div class="container">
+        <button type="submit" class="btn btn-outline-dark mx-auto d-block">Submit</button>
+    </div>
+
+</form>

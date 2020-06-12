@@ -1,0 +1,28 @@
+.bannerTop {
+    background-color: #ffd31d;
+    text-align: center;
+    margin: auto;
+}
+
+body {
+    background-color: #fae7cb;
+}
+
+input[type=radio] {
+    margin-left: 5px;
+}
+
+nav {
+    background-color: #ff7272;
+}
+
+#invalid-msg {
+    display: none;
+    margin-left: auto;
+    margin-right: auto;
+    width: 25%;
+}
+
+#account-selection-box {
+    background-color: #ffb385;
+}

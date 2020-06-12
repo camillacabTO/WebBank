@@ -1,0 +1,31 @@
+<div class="container p-3 my-3 border">
+  <form method="post" action="/login">
+    <div class="form-group">
+      <label for="email">Email address</label>
+      <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+    </div>
+    <section class="mb-4">
+      <button type="submit" class="btn btn-outline-dark">Login</button>
+      <a class="btn btn-outline-dark" href="/register" role="button">Register</a>
+    </section>
+    {{#if didRegistered}}
+      <div class="alert alert-success text-center">
+        Registered Successfully
+      </div>
+    {{/if}}
+    {{#if notRegistered}}
+      <div class="alert alert-danger text-center">
+        Not a registered username
+      </div>
+    {{/if}}
+     {{#if wrongPassword}}
+      <div class="alert alert-danger text-center">
+        Invalid Password
+      </div>
+    {{/if}}
+  </form>
+</div>
