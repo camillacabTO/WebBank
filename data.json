@@ -6,5 +6,13 @@
     {
         "email": "calves-barros@myseneca.ca",
         "password": "09876"
+    },
+    {
+        "email": "millacab@gmail.com",
+        "password": "12345678"
+    },
+    {
+        "email": "luke@gmail.com",
+        "password": "09876543"
     }
 ]

@@ -26,3 +26,41 @@ nav {
 #account-selection-box {
     background-color: #ffb385;
 }
+
+#account-number-box {
+    width: 20%;
+    background-color: transparent;
+    border: 3px solid #ffb385;
+}
+
+.clsUsernameLogout {
+    position: relative;
+    left: 3px;
+}
+
+div#divUsername
+{
+    opacity: 1;
+    transition: opacity 1s ease-out;    
+}
+div#divLogout
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+a#aLogout
+{
+    opacity: 0;	
+    text-decoration: underline;
+    transition: opacity 1s ease-in;        
+}
+.clsUsernameLogout:hover div#divUsername
+{
+    opacity: 0;
+}
+.clsUsernameLogout:hover a#aLogout
+{
+    opacity: 1;	
+}
