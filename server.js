@@ -7,9 +7,9 @@ const expressValidator = require("express-validator");
 const data = require('./users');
 const app = express();
 
-let activeUser = '';
+const PORT = process.env.PORT || 3000;
 
-// CREATE PLACEHOLDERS FOR TEXTFIELDS!!!!
+let activeUser = '';
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -97,4 +97,6 @@ app.post('/main', (req, res) => {
     });
 });
 
-app.listen(5000);
+app.listen(PORT, function() {
+    console.log(`Listening on port ${PORT}`);
+});
