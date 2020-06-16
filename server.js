@@ -31,6 +31,10 @@ Handlebars.registerHelper('createAccountNumber', function () {
 
 app.use(expressValidator());
 
+app.get('/', (req, res) => {
+    res.redirect('/login');
+});
+
 app.post('/register', (req, res) => {
 
     req.check("email", "Invalid email address").isEmail();							 
