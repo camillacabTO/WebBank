@@ -35,6 +35,10 @@ app.get('/', (req, res) => {
     res.redirect('/login');
 });
 
+app.get('/balance', (req, res) => {
+    res.render('balance');
+});
+
 app.post('/register', (req, res) => {
 
     req.check("email", "Invalid email address").isEmail();							 
@@ -85,9 +89,24 @@ app.get('/register', (req, res) => {
     res.render('register');
 });
 
-app.post('/openaccount', (req, res) => {
+app.post('/operation', (req, res) => {
+    const op = req.body.operation;
     console.log(`${req.body.operation}`);
-    res.render('openaccount');
+
+    switch (op) {
+        case 'balance':
+            res.render('balance');
+            break;
+        case 'deposit':
+            res.render('deposit');
+            break;
+        case 'withdrawal':
+            res.render('withdrawal');
+            break;
+        case 'open-account':
+            res.render('openaccount');
+        // break;
+    }
 });
 
 app.post('/main', (req, res) => {
