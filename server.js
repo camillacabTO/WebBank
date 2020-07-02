@@ -26,9 +26,12 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', '.hbs');
 app.use(express.static(path.join(__dirname, 'public')));
 
-Handlebars.registerHelper('createAccountNumber', function () {
-    return Math.floor(Math.random() * 10000000); // generate random account number 
-});
+// Handlebars.registerHelper('createAccountNumber', function () {
+//     // return Math.floor(Math.random() * 10000000); 
+//     // const lastAccNum = parseInt(accounts.lastID);
+//     // const newAccNum = lastAccNum + 1;
+
+// });
 
 app.use(expressValidator());
 
@@ -92,7 +95,7 @@ app.get('/register', (req, res) => {
 
 app.post('/operation', (req, res) => {
     const op = req.body.operation;
-    const accNum = req.body.accountNumber;
+    const accNum = ("000000" + req.body.accountNumber).slice(-7); // formart account number with 0s
     var doesAccExist = false;
 
     if (accounts.hasOwnProperty(accNum)){
@@ -100,7 +103,7 @@ app.post('/operation', (req, res) => {
         activeAcc = accounts[accNum];
     }
 
-    if (doesAccExist) {
+    if (op !== 'open-account' && doesAccExist) {
         switch (op) {
             case 'balance':
                 res.render('balance', {
@@ -114,30 +117,58 @@ app.post('/operation', (req, res) => {
                 break;
             case 'withdrawal':
                 res.render('withdrawal', { accNumber: accNum });
-                break;
-            case 'open-account': 
-                res.render('openaccount');
         } 
+    } else if (op === 'open-account') {
+        res.render('openaccount');
     } else {
-        if (op === 'open-account') {
-            res.render('openaccount');
-        } else {
-            res.render('bankMain', { invalidAccount: true });
-        }
+        res.render('bankMain', { invalidAccount: true });
     }
+
 });
 
 app.post('/main', (req, res) => {
     let accountType = req.body.typeofaccount;
-    console.log(accountType);
+    const lastAccNum = parseInt(accounts.lastID);
+    accounts.lastID = lastAccNum + 1;
+    var newAccNum = ("000000" + (lastAccNum + 1)).slice(-7);
+    accounts[newAccNum] = {
+        "accountType": accountType,
+        "accountBalance": 0.00
+    };
+
+    data.writeData(accounts, './accounts.json');
 
     res.render('bankMain', { 
     accountCreated: true,
     activeUser: activeUser,
-    accountType: (accountType === 'checking') ? 'Checking' : 'Savings'
+    accountType: (accountType === 'Checking') ? 'Checking' : 'Savings',
+    createdAccountNumber: newAccNum
     });
+});
+
+app.post('/d', (req, res) => {
+    let amount = parseFloat(req.body.depositAmount);
+    activeAcc.accountBalance += amount;
+
+    data.writeData(accounts, './accounts.json');
+    res.render('bankMain', { activeUser: activeUser }); 
+
+});
+
+app.post('/w', (req, res) => {
+    let amount = parseFloat(req.body.withdrawalAmount);
+
+    if (amount <= activeAcc.accountBalance) {
+        activeAcc.accountBalance -= amount;
+        data.writeData(accounts, './accounts.json');
+        res.render('bankMain', { activeUser: activeUser });
+    } else {
+        res.render('withdrawal', { insufficientFunds: true });
+    }
 });
 
 app.listen(PORT, function() {
     console.log(`Listening on port ${PORT}`);
 });
+
+// create account and find account without the 0s

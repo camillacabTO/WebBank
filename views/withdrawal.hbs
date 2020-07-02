@@ -1,6 +1,6 @@
 {{> banner}}
-<form action="" method="POST">
-  <div class="card text-center" id="account-selection-box">
+<form action="/w" method="POST">
+  <div class="card text-center mb-5" id="account-selection-box">
     <h3 class="card-header">Make a Withdrawal</h3>
     <div class="card-body">
       <div class="form-check my-1">
@@ -14,4 +14,7 @@
       </div>
     </div>
   </div>
+  {{#if insufficientFunds}}
+    <div class="alert alert-danger text-center w-25 mx-auto">Insufficient Funds</div>
+  {{/if}}
 </form>
