@@ -4,12 +4,13 @@ const Handlebars = require("handlebars");
 const bodyParser = require('body-parser');
 const expbs = require('express-handlebars');
 const expressValidator = require("express-validator");
+const sessions = require("client-sessions");
 const data = require('./dataManager');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-let activeUser = '';
+// let activeUser = '';
 let activeAcc = '';
 const users = data.readData('./data.json');
 const accounts = data.readData('./accounts.json');
@@ -25,15 +26,13 @@ app.engine('.hbs', expbs({
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', '.hbs');
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Handlebars.registerHelper('createAccountNumber', function () {
-//     // return Math.floor(Math.random() * 10000000); 
-//     // const lastAccNum = parseInt(accounts.lastID);
-//     // const newAccNum = lastAccNum + 1;
-
-// });
-
 app.use(expressValidator());
+app.use(sessions({
+    cookieName: 'userSession',
+    secret: 'cmpaeifpafjkpoaekpckcaoepkp', 
+    duration: 24 * 60 * 60 * 1000, 
+    activeDuration: 1000 * 60 * 5 
+  }));
 
 app.get('/', (req, res) => {
     res.redirect('/login');
@@ -75,8 +74,10 @@ app.post('/login', (req, res) => {
     let found = users.find((user) => user.email === req.body.email);
     if (found) {
         if (found.password === req.body.password) {
-            activeUser = req.body.email;
-            res.render('bankMain', { activeUser: activeUser });
+            // activeUser = req.body.email;
+            req.userSession.username = req.body.email;
+            console.log(req.userSession);
+            res.render('bankMain', { activeUser: req.userSession.username });
         } else {
             res.render('index', {
                 wrongPassword: true
@@ -95,7 +96,7 @@ app.get('/register', (req, res) => {
 
 app.post('/operation', (req, res) => {
     const op = req.body.operation;
-    const accNum = ("000000" + req.body.accountNumber).slice(-7); // formart account number with 0s
+    const accNum = ("000000" + req.body.accountNumber).slice(-7); // format account number with 0s
     var doesAccExist = false;
 
     if (accounts.hasOwnProperty(accNum)){
@@ -121,7 +122,7 @@ app.post('/operation', (req, res) => {
     } else if (op === 'open-account') {
         res.render('openaccount');
     } else {
-        res.render('bankMain', { invalidAccount: true });
+        res.render('bankMain', { invalidAccount: true, activeUser: req.userSession.username });
     }
 
 });
@@ -140,7 +141,7 @@ app.post('/main', (req, res) => {
 
     res.render('bankMain', { 
     accountCreated: true,
-    activeUser: activeUser,
+    activeUser: req.userSession.username,
     accountType: (accountType === 'Checking') ? 'Checking' : 'Savings',
     createdAccountNumber: newAccNum
     });
@@ -151,7 +152,7 @@ app.post('/d', (req, res) => {
     activeAcc.accountBalance += amount;
 
     data.writeData(accounts, './accounts.json');
-    res.render('bankMain', { activeUser: activeUser }); 
+    res.render('bankMain', { activeUser: req.userSession.username }); 
 
 });
 
@@ -161,14 +162,20 @@ app.post('/w', (req, res) => {
     if (amount <= activeAcc.accountBalance) {
         activeAcc.accountBalance -= amount;
         data.writeData(accounts, './accounts.json');
-        res.render('bankMain', { activeUser: activeUser });
+        res.render('bankMain', { activeUser: req.userSession.username });
     } else {
         res.render('withdrawal', { insufficientFunds: true });
     }
 });
 
+app.get('/logout', function (req, res) {
+    req.userSession.reset();
+    res.render('index');
+  });
+
 app.listen(PORT, function() {
     console.log(`Listening on port ${PORT}`);
 });
 
-// create account and find account without the 0s
+// FIX USER LOGIN EMAIL DISAPPEARED (COOKIE?)
+// DEPOSIT, WITHDRAWAL AND ACC NUMBER INPUTS --> NUMBERS ONLY

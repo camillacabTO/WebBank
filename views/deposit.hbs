@@ -5,8 +5,7 @@
     <div class="card-body">
       <div class="form-check my-1">
         <label class="form-check-label" for="checking">Account Number: {{ accNumber }}</label>
-        <input class="form-control w-25 mx-auto my-3" type="text" name="depositAmount" autofocus>
-        {{!-- limit input to number only --}}
+        <input type="text" class="form-control w-25 mx-auto my-3" name= "depositAmount" onkeypress="validate(event)" autofocus>
       </div>
       <div class="container center-flex m-auto text-center">
         <button type="submit" class="btn btn-outline-dark btn-size">Submit</button>

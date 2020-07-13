@@ -5,15 +5,15 @@
     <h5 class="card-header">Select an Account</h5>
     <div class="card-body">
       <div class="form-check my-1">
-        <input type="radio" class="form-check-input" name="typeofaccount" value="Checking">
+        <input type="radio" class="form-check-input" name="typeofaccount" id="checking-btn" value="Checking" onclick="checkSelectedAccType()">
         <label class="form-check-label ml-5" for="checking">Checking Account</label>
       </div>
       <div class="form-check my-1">
-        <input type="radio" class="form-check-input" name="typeofaccount" value="Savings">
+        <input type="radio" class="form-check-input" id="savings-btn"name="typeofaccount" value="Savings" onclick="checkSelectedAccType()">
         <label class="form-check-label ml-5" for="savings">Savings Account</label>
       </div>
       <div class="container">
-        <button type="submit" class="btn btn-outline-dark mt-2 mx-auto d-block">Create Account</button>
+        <button type="submit" id="submit-btn"class="btn btn-outline-dark mt-2 mx-auto d-block" disabled>Create Account</button>
       </div>
     </div>
   </div>
