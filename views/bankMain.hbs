@@ -28,7 +28,7 @@
         </div>
     </div>
     <section class="justify-content-center">
-        <input type="text" class="form-control mx-auto d-block" id="account-number-box" placeholder="Account Number" maxlength="7" name="accountNumber" onkeypress="validate(event)">
+        <input type="text" class="form-control mx-auto d-block" id="account-number-box" placeholder="Account Number" maxlength="7" name="accountNumber" onkeypress="validate(event)" autofocus>
         <img src="/images/banklogo.png" alt="banklogo" class="mx-auto d-block my-4">
         {{#if invalidAccount}}
             <div class="alert alert-danger text-center w-25 mx-auto">Invalid Account Number</div>

@@ -1,5 +1,5 @@
 const fs = require('fs');
-// ./data.json
+
 const readData = (filePath) => {
     try {
         const data = fs.readFileSync(filePath);

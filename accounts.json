@@ -1,5 +1,5 @@
 {
-    "lastID": 38,
+    "lastID": 39,
     "0000001": {
         "accountType": "Savings",
         "accountBalance": 1194.33
@@ -34,7 +34,7 @@
     },
     "0000024": {
         "accountType": "Savings",
-        "accountBalance": 0
+        "accountBalance": 170.5
     },
     "0000025": {
         "accountType": "Savings",
@@ -50,7 +50,7 @@
     },
     "0000028": {
         "accountType": "Checking",
-        "accountBalance": 10
+        "accountBalance": 310
     },
     "0000029": {
         "accountType": "Savings",
@@ -89,6 +89,10 @@
         "accountBalance": 0
     },
     "0000038": {
+        "accountType": "Savings",
+        "accountBalance": 200.30
+    },
+    "0000039": {
         "accountType": "Savings",
         "accountBalance": 0
     }

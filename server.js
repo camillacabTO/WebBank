@@ -10,7 +10,6 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-// let activeUser = '';
 let activeAcc = '';
 const users = data.readData('./data.json');
 const accounts = data.readData('./accounts.json');
@@ -34,7 +33,7 @@ app.use(sessions({
     activeDuration: 1000 * 60 * 5 
   }));
 
-app.get('/', (req, res) => {
+app.get('/', (req, res) => { // redirect the user to the login page if '/' is used
     res.redirect('/login');
 });
 
@@ -74,7 +73,6 @@ app.post('/login', (req, res) => {
     let found = users.find((user) => user.email === req.body.email);
     if (found) {
         if (found.password === req.body.password) {
-            // activeUser = req.body.email;
             req.userSession.username = req.body.email;
             console.log(req.userSession);
             res.render('bankMain', { activeUser: req.userSession.username });
@@ -124,7 +122,6 @@ app.post('/operation', (req, res) => {
     } else {
         res.render('bankMain', { invalidAccount: true, activeUser: req.userSession.username });
     }
-
 });
 
 app.post('/main', (req, res) => {
@@ -177,5 +174,3 @@ app.listen(PORT, function() {
     console.log(`Listening on port ${PORT}`);
 });
 
-// FIX USER LOGIN EMAIL DISAPPEARED (COOKIE?)
-// DEPOSIT, WITHDRAWAL AND ACC NUMBER INPUTS --> NUMBERS ONLY
