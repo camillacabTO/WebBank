@@ -10,7 +10,7 @@
     },
     "0000010": {
         "accountType": "Savings",
-        "accountBalance": 2899.5
+        "accountBalance": null
     },
     "0000015": {
         "accountType": "Chequing",
@@ -34,7 +34,7 @@
     },
     "0000024": {
         "accountType": "Savings",
-        "accountBalance": 170.5
+        "accountBalance": 0
     },
     "0000025": {
         "accountType": "Savings",
@@ -90,7 +90,7 @@
     },
     "0000038": {
         "accountType": "Savings",
-        "accountBalance": 200.30
+        "accountBalance": 200.3
     },
     "0000039": {
         "accountType": "Savings",

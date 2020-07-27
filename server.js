@@ -11,6 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 let activeAcc = '';
+let accNum;
 const users = data.readData('./data.json');
 const accounts = data.readData('./accounts.json');
 
@@ -29,8 +30,11 @@ app.use(expressValidator());
 app.use(sessions({
     cookieName: 'userSession',
     secret: 'cmpaeifpafjkpoaekpckcaoepkp', 
-    duration: 24 * 60 * 60 * 1000, 
-    activeDuration: 1000 * 60 * 5 
+	duration: 5 * 60 * 1000,											
+	activeDuration: 1 * 60 * 1000,
+    httpOnly: true,
+    secure: true,
+    ephemeral: true   
   }));
 
 app.get('/', (req, res) => { // redirect the user to the login page if '/' is used
@@ -66,6 +70,7 @@ app.post('/register', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
+    req.userSession.username = "Unknown";
     res.render('index');
 });
 
@@ -94,7 +99,7 @@ app.get('/register', (req, res) => {
 
 app.post('/operation', (req, res) => {
     const op = req.body.operation;
-    const accNum = ("000000" + req.body.accountNumber).slice(-7); // format account number with 0s
+    accNum = ("000000" + req.body.accountNumber).slice(-7); // format account number with 0s
     var doesAccExist = false;
 
     if (accounts.hasOwnProperty(accNum)){
@@ -150,7 +155,6 @@ app.post('/d', (req, res) => {
 
     data.writeData(accounts, './accounts.json');
     res.render('bankMain', { activeUser: req.userSession.username }); 
-
 });
 
 app.post('/w', (req, res) => {
@@ -161,7 +165,10 @@ app.post('/w', (req, res) => {
         data.writeData(accounts, './accounts.json');
         res.render('bankMain', { activeUser: req.userSession.username });
     } else {
-        res.render('withdrawal', { insufficientFunds: true });
+        res.render('withdrawal', { 
+            insufficientFunds: true,
+            accNumber: accNum
+         });
     }
 });
 

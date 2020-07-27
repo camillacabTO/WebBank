@@ -21,5 +21,18 @@ function validate(evt) {
     }
   }
 
+function emptyDeposit() {
+    const depositAmount = document.getElementById("deposit-amount").value;
+    if (depositAmount == "") {
+        alert("Enter a valid deposit amount");
+        return false;
+    }
+}
 
-
+function emptyWithdrawal() {
+    const withdrawalAmount = document.getElementById("withdrawal-amount").value;
+    if (withdrawalAmount == "") {
+        alert("Enter a valid withdrawal amount");
+        return false;
+    }
+}
