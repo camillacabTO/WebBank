@@ -17,12 +17,9 @@ nav {
     background-color: #ff7272;
 }
 
-/* #invalid-msg {
-    display: none;
-    margin-left: auto;
-    margin-right: auto;
-    width: 25%;
-} */
+select.form-control{
+    display:inline-block
+}
 
 #account-selection-box {
     background-color: #ffb385;

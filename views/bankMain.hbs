@@ -28,7 +28,13 @@
         </div>
     </div>
     <section class="justify-content-center">
-        <input type="text" class="form-control mx-auto d-block" id="account-number-box" placeholder="Account Number" maxlength="7" name="accountNumber" onkeypress="validate(event)" autofocus>
+        <div class="form-group w-25 mx-auto">
+            <label for="account-number-box">Select an Account</label> {{!-- fix label position --}}
+            <select class="form-control" name="accountNumber" id="account-number-box">
+                <option value="{{Chequing}}">{{Chequing}}</option>
+                <option value="{{Savings}}">{{Savings}}</option>
+            </select>
+        </div>
         <img src="/images/banklogo.png" alt="banklogo" class="mx-auto d-block my-4">
         {{#if invalidAccount}}
             <div class="alert alert-danger text-center w-25 mx-auto">Invalid Account Number</div>

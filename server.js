@@ -4,16 +4,21 @@ const Handlebars = require("handlebars");
 const bodyParser = require('body-parser');
 const expbs = require('express-handlebars');
 const expressValidator = require("express-validator");
+const mongoose = require('mongoose');
 const sessions = require("client-sessions");
 const data = require('./dataManager');
-const app = express();
+const Client = require('./models/Client');
 
 const PORT = process.env.PORT || 3000;
+const app = express();
+mongoose.connect('mongodb://localhost/WebBank', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
 
 let activeAcc = '';
 let accNum;
+
 const users = data.readData('./data.json');
 const accounts = data.readData('./accounts.json');
+console.log(accounts);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -60,6 +65,13 @@ app.post('/register', (req, res) => {
             res.render('register' , { errors: errorArray });
         } else {
             users.push({ email: req.body.email, password: req.body.password});
+            Client.create({
+                Username: req.body.email,
+                Chequing: null,
+                Savings: null
+            }, (error, client) => {
+                console.log(error, client);
+            });
             res.render('index', { didRegistered: true });
         }
     } else {
@@ -70,7 +82,7 @@ app.post('/register', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    req.userSession.username = "Unknown";
+    req.userSession.username = 'Unknown';
     res.render('index');
 });
 
@@ -79,8 +91,16 @@ app.post('/login', (req, res) => {
     if (found) {
         if (found.password === req.body.password) {
             req.userSession.username = req.body.email;
-            console.log(req.userSession);
-            res.render('bankMain', { activeUser: req.userSession.username });
+            Client.find({Username: req.body.email}, (error, client) => { 
+                console.log(error, client);
+                req.userSession.savings = client[0].Savings;
+                req.userSession.chequing = client[0].Chequing;
+                res.render('bankMain', { 
+                    activeUser: req.userSession.username,
+                    Chequing: req.userSession.chequing,
+                    Savings: req.userSession.savings
+                 });
+            });
         } else {
             res.render('index', {
                 wrongPassword: true
@@ -99,7 +119,7 @@ app.get('/register', (req, res) => {
 
 app.post('/operation', (req, res) => {
     const op = req.body.operation;
-    accNum = ("000000" + req.body.accountNumber).slice(-7); // format account number with 0s
+    accNum = req.body.accountNumber;
     var doesAccExist = false;
 
     if (accounts.hasOwnProperty(accNum)){
@@ -125,28 +145,54 @@ app.post('/operation', (req, res) => {
     } else if (op === 'open-account') {
         res.render('openaccount');
     } else {
-        res.render('bankMain', { invalidAccount: true, activeUser: req.userSession.username });
+        res.render('bankMain', { 
+            invalidAccount: true, 
+            activeUser: req.userSession.username,
+            Chequing: req.userSession.chequing,
+            Savings: req.userSession.savings 
+        });
     }
 });
 
 app.post('/main', (req, res) => {
     let accountType = req.body.typeofaccount;
-    const lastAccNum = parseInt(accounts.lastID);
-    accounts.lastID = lastAccNum + 1;
-    var newAccNum = ("000000" + (lastAccNum + 1)).slice(-7);
-    accounts[newAccNum] = {
-        "accountType": accountType,
-        "accountBalance": 0.00
-    };
+    var newAccNum = ++accounts.lastID;
+    console.log(accounts.lastID, newAccNum);
 
-    data.writeData(accounts, './accounts.json');
+    Client.find({Username: req.userSession.username}, (error, client) => { 
+        console.log(error, client);
+        console.log(client);
+        console.log(client[0][accountType]);
+        if (client[0][accountType] === null) {
+            if (accountType == 'Chequing') {
+                Client.findByIdAndUpdate(client[0].id, { Chequing: newAccNum }, (error, client) => console.log(error, client));
+                req.userSession.chequing = newAccNum;
+            } else {
+                Client.findByIdAndUpdate(client[0].id, { Savings: newAccNum }, (error, client) => console.log(error, client));
+                req.userSession.savings = newAccNum;
+            }
 
-    res.render('bankMain', { 
-    accountCreated: true,
-    activeUser: req.userSession.username,
-    accountType: (accountType === 'Checking') ? 'Checking' : 'Savings',
-    createdAccountNumber: newAccNum
+            accounts[newAccNum] = {
+                "accountType": accountType,
+                "accountBalance": 0.00
+            };
+
+            data.writeData(accounts, './accounts.json');
+
+            res.render('bankMain', { 
+            accountCreated: true,
+            activeUser: req.userSession.username,
+            accountType: (accountType === 'Chequing') ? 'Chequing' : 'Savings',
+            createdAccountNumber: newAccNum,
+            Chequing: req.userSession.chequing,
+            Savings: req.userSession.savings
+            });
+        } else {
+            res.render('openaccount', { accAlreadyExists: true });
+        }
     });
+         
+
 });
 
 app.post('/d', (req, res) => {
@@ -154,7 +200,11 @@ app.post('/d', (req, res) => {
     activeAcc.accountBalance += amount;
 
     data.writeData(accounts, './accounts.json');
-    res.render('bankMain', { activeUser: req.userSession.username }); 
+    res.render('bankMain', {
+        activeUser: req.userSession.username,
+        Chequing: req.userSession.chequing,
+        Savings: req.userSession.savings  
+    }); 
 });
 
 app.post('/w', (req, res) => {
@@ -163,7 +213,11 @@ app.post('/w', (req, res) => {
     if (amount <= activeAcc.accountBalance) {
         activeAcc.accountBalance -= amount;
         data.writeData(accounts, './accounts.json');
-        res.render('bankMain', { activeUser: req.userSession.username });
+        res.render('bankMain', { 
+            activeUser: req.userSession.username,
+            Chequing: req.userSession.chequing,
+            Savings: req.userSession.savings
+        });
     } else {
         res.render('withdrawal', { 
             insufficientFunds: true,
@@ -181,3 +235,8 @@ app.listen(PORT, function() {
     console.log(`Listening on port ${PORT}`);
 });
 
+//format account amount to 2 decimals
+// move operations to another file
+// fix dropdown bar
+// create Atlas account
+// clean up

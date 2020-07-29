@@ -1,11 +1,10 @@
 {{> banner}}
 <form action="/main" method="POST"> 
-{{!-- change action name --}}
   <div class="card text-center" id="account-selection-box">
     <h5 class="card-header">Select an Account</h5>
     <div class="card-body">
       <div class="form-check my-1">
-        <input type="radio" class="form-check-input" name="typeofaccount" id="checking-btn" value="Checking" onclick="checkSelectedAccType()">
+        <input type="radio" class="form-check-input" name="typeofaccount" id="checking-btn" value="Chequing" onclick="checkSelectedAccType()">
         <label class="form-check-label ml-5" for="checking">Checking Account</label>
       </div>
       <div class="form-check my-1">
@@ -18,5 +17,9 @@
       </div>
     </div>
   </div>
+  {{#if accAlreadyExists}}
+    <div class="alert alert-danger text-center w-25 mx-auto mt-3">Account already exists</div>
+  {{/if}}
+  {{!-- be more specific about acc type --}}
 </form>
 
