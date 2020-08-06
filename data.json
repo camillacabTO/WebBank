@@ -1,18 +1,10 @@
 [
     {
-        "email": "camillacab@hotmail.com",
+        "email": "millacab@gmail.com",
         "password": "12345678"
-    },
-    {
-        "email": "eduarda@hotmail.com",
-        "password": "09876543"
     },
     {
         "email": "luke@gmail.com",
-        "password": "12345678"
-    },
-    {
-        "email": "lara@gmail.com",
-        "password": "lukeluke"
+        "password": "09876543"
     }
 ]

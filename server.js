@@ -8,17 +8,18 @@ const mongoose = require('mongoose');
 const sessions = require("client-sessions");
 const data = require('./dataManager');
 const Client = require('./models/Client');
+const operationRouter = require('./routes/operation');
 
 const PORT = process.env.PORT || 3000;
 const app = express();
-mongoose.connect('mongodb://localhost/WebBank', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
-
-let activeAcc = '';
-let accNum;
+// mongoose.connect('mongodb://localhost/WebBank', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
+mongoose.connect('mongodb+srv://camila:12345@cluster0.ilqul.mongodb.net/Client?retryWrites=true&w=majority',{ useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
+const db = mongoose.connection;
+db.on('error', (error) => console.error(error));
+db.once('open', () => console.log('Connected to Database'));
 
 const users = data.readData('./data.json');
 const accounts = data.readData('./accounts.json');
-console.log(accounts);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -42,188 +43,10 @@ app.use(sessions({
     ephemeral: true   
   }));
 
+app.use('/operation', operationRouter);
+
 app.get('/', (req, res) => { // redirect the user to the login page if '/' is used
     res.redirect('/login');
-});
-
-app.get('/balance', (req, res) => {
-    res.render('balance');
-});
-
-app.post('/register', (req, res) => {
-
-    req.check("email", "Invalid email address").isEmail();							 
-	req.check("password", "Password must contain 8 or more characters").isLength({min: 8});
-    req.check("password", "Mismatched Password and Confirm Password").equals(req.body.passwordConfirmation);
-
-    var errorArray = req.validationErrors();
-
-    let found = users.find((user) => user.email === req.body.email);
-    console.log(`${req.body.email} ${req.body.password} ${req.body.passwordConfirmation}`);
-    if (!found) { // failure
-        if (errorArray) {
-            res.render('register' , { errors: errorArray });
-        } else {
-            users.push({ email: req.body.email, password: req.body.password});
-            Client.create({
-                Username: req.body.email,
-                Chequing: null,
-                Savings: null
-            }, (error, client) => {
-                console.log(error, client);
-            });
-            res.render('index', { didRegistered: true });
-        }
-    } else {
-        res.render('register', { doesExist: true }); // success
-    }
-    data.writeData(users, './data.json');
-
-});
-
-app.get('/login', (req, res) => {
-    req.userSession.username = 'Unknown';
-    res.render('index');
-});
-
-app.post('/login', (req, res) => {
-    let found = users.find((user) => user.email === req.body.email);
-    if (found) {
-        if (found.password === req.body.password) {
-            req.userSession.username = req.body.email;
-            Client.find({Username: req.body.email}, (error, client) => { 
-                console.log(error, client);
-                req.userSession.savings = client[0].Savings;
-                req.userSession.chequing = client[0].Chequing;
-                res.render('bankMain', { 
-                    activeUser: req.userSession.username,
-                    Chequing: req.userSession.chequing,
-                    Savings: req.userSession.savings
-                 });
-            });
-        } else {
-            res.render('index', {
-                wrongPassword: true
-            });
-        };
-    } else {
-        res.render('index', {
-            notRegistered: true
-        });
-    }
-});
-
-app.get('/register', (req, res) => {
-    res.render('register');
-});
-
-app.post('/operation', (req, res) => {
-    const op = req.body.operation;
-    accNum = req.body.accountNumber;
-    var doesAccExist = false;
-
-    if (accounts.hasOwnProperty(accNum)){
-        doesAccExist = true;
-        activeAcc = accounts[accNum];
-    }
-
-    if (op !== 'open-account' && doesAccExist) {
-        switch (op) {
-            case 'balance':
-                res.render('balance', {
-                    accNumber: accNum,
-                    accType: activeAcc.accountType,
-                    accBalance: activeAcc.accountBalance,
-                });
-                break;
-            case 'deposit':
-                res.render('deposit', { accNumber: accNum });
-                break;
-            case 'withdrawal':
-                res.render('withdrawal', { accNumber: accNum });
-        } 
-    } else if (op === 'open-account') {
-        res.render('openaccount');
-    } else {
-        res.render('bankMain', { 
-            invalidAccount: true, 
-            activeUser: req.userSession.username,
-            Chequing: req.userSession.chequing,
-            Savings: req.userSession.savings 
-        });
-    }
-});
-
-app.post('/main', (req, res) => {
-    let accountType = req.body.typeofaccount;
-    var newAccNum = ++accounts.lastID;
-    console.log(accounts.lastID, newAccNum);
-
-    Client.find({Username: req.userSession.username}, (error, client) => { 
-        console.log(error, client);
-        console.log(client);
-        console.log(client[0][accountType]);
-        if (client[0][accountType] === null) {
-            if (accountType == 'Chequing') {
-                Client.findByIdAndUpdate(client[0].id, { Chequing: newAccNum }, (error, client) => console.log(error, client));
-                req.userSession.chequing = newAccNum;
-            } else {
-                Client.findByIdAndUpdate(client[0].id, { Savings: newAccNum }, (error, client) => console.log(error, client));
-                req.userSession.savings = newAccNum;
-            }
-
-            accounts[newAccNum] = {
-                "accountType": accountType,
-                "accountBalance": 0.00
-            };
-
-            data.writeData(accounts, './accounts.json');
-
-            res.render('bankMain', { 
-            accountCreated: true,
-            activeUser: req.userSession.username,
-            accountType: (accountType === 'Chequing') ? 'Chequing' : 'Savings',
-            createdAccountNumber: newAccNum,
-            Chequing: req.userSession.chequing,
-            Savings: req.userSession.savings
-            });
-        } else {
-            res.render('openaccount', { accAlreadyExists: true });
-        }
-    });
-         
-
-});
-
-app.post('/d', (req, res) => {
-    let amount = parseFloat(req.body.depositAmount);
-    activeAcc.accountBalance += amount;
-
-    data.writeData(accounts, './accounts.json');
-    res.render('bankMain', {
-        activeUser: req.userSession.username,
-        Chequing: req.userSession.chequing,
-        Savings: req.userSession.savings  
-    }); 
-});
-
-app.post('/w', (req, res) => {
-    let amount = parseFloat(req.body.withdrawalAmount);
-
-    if (amount <= activeAcc.accountBalance) {
-        activeAcc.accountBalance -= amount;
-        data.writeData(accounts, './accounts.json');
-        res.render('bankMain', { 
-            activeUser: req.userSession.username,
-            Chequing: req.userSession.chequing,
-            Savings: req.userSession.savings
-        });
-    } else {
-        res.render('withdrawal', { 
-            insufficientFunds: true,
-            accNumber: accNum
-         });
-    }
 });
 
 app.get('/logout', function (req, res) {
@@ -231,12 +54,139 @@ app.get('/logout', function (req, res) {
     res.render('index');
   });
 
+app.route('/register')
+.get((req, res) => {
+    res.render('register');
+})
+.post(async (req, res) => {
+    // checking if email and password are valid
+    req.check("email", "Invalid email address").isEmail();							 
+	req.check("password", "Password must contain 8 or more characters").isLength({min: 8});
+    req.check("password", "Mismatched Password and Confirm Password").equals(req.body.passwordConfirmation);
+    // saving potential invalid information errors into an array
+    var errorArray = req.validationErrors();
+    //checking if email provided is already registered
+    let found = users.find((user) => user.email === req.body.email);
+
+    if (!found) {
+        //if email not registered but info provided is not valid, display alerts
+        if (errorArray) {
+            res.render('register' , { errors: errorArray });
+        } else { 
+        // if email not registered and information is valid. Create a new user and associate him /her with two non-existent chequing and savings account (empty slots)
+            users.push({ email: req.body.email, password: req.body.password});
+            data.writeData(users, './data.json');
+            const newClient = new Client({
+                Username: req.body.email,
+                Chequing: null,
+                Savings: null
+            });
+            try {
+                await newClient.save();
+                console.log(newClient);
+              // confirm successful registration of new user
+                res.render('index', { didRegistered: true });
+            } catch (error) {
+                console.error(error);
+            }
+          }
+    } else {
+        // email already registered
+        res.render('register', { doesExist: true }); 
+    }
+});
+
+app.route('/login')
+.get((req, res) => {
+    req.userSession.username = 'Unknown';
+    res.render('index');
+})
+.post(async (req, res) => {
+    // checking if user is registered
+    let found = users.find((user) => user.email === req.body.email);
+    if (found) {
+        // if user already exists, checking if password is correct
+        if (found.password === req.body.password) {
+            // if user existis and password is correct, save username in the cookie
+            req.userSession.username = req.body.email;
+            // finding accounts associated to this user
+            const client = await Client.findOne({ Username: req.body.email });
+            try {
+                console.log(client);
+                // saving accounts numbers in the cookie (current session)
+                req.userSession.savings = client.Savings;
+                req.userSession.chequing = client.Chequing;
+                // display main menu with user's email and accounts
+                res.render('bankMain', { 
+                    activeUser: req.userSession.username,
+                    Chequing: req.userSession.chequing,
+                    Savings: req.userSession.savings
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        } else {
+            // user exists but password is wrong
+            res.render('index', {
+                wrongPassword: true
+            });
+        };
+    } else { // user not found
+        res.render('index', {
+            notRegistered: true
+        });
+    }
+});
+
+app.post('/main', async (req, res) => {
+    let accountType = req.body.typeofaccount;
+    var newAccNum = ++accounts.lastID;
+    console.log(accounts.lastID, newAccNum);
+    const currClient = await Client.findOne({Username: req.userSession.username});
+    try {
+        console.log(currClient[accountType]);
+        if (currClient[accountType] === null) {
+            if (accountType == 'Chequing') {
+                req.userSession.chequing = newAccNum;
+                try {
+                    await Client.findByIdAndUpdate(currClient.id, { Chequing: newAccNum });
+                    await Client.save();
+                } catch (error) {
+                    console.error(error);
+                }
+            } else {
+                req.userSession.savings = newAccNum;
+                try {
+                    await Client.findByIdAndUpdate(currClient.id, { Savings: newAccNum });
+                    await Client.save();
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+            accounts[newAccNum] = {
+                "accountType": accountType,
+                "accountBalance": 0.00
+            };
+            data.writeData(accounts, './accounts.json');
+
+            res.render('bankMain', { 
+            accountCreated: true,
+            activeUser: req.userSession.username,
+            createdAccountNumber: newAccNum,
+            Chequing: req.userSession.chequing,
+            Savings: req.userSession.savings,
+            accountType,
+            });
+        } else {
+            res.render('openaccount', { accAlreadyExists: true, accountType });
+        }
+    } catch (error) {
+        console.error(error);
+    }});
+
 app.listen(PORT, function() {
     console.log(`Listening on port ${PORT}`);
 });
 
-//format account amount to 2 decimals
-// move operations to another file
-// fix dropdown bar
-// create Atlas account
-// clean up
+// add remmaning comments
+// test it out more

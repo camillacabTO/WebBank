@@ -1,35 +1,15 @@
 {
-    "1000008": {
-        "accountType": "Savings",
-        "accountBalance": 1664.33
-    },
-    "1000010": {
-        "accountType": "Chequing",
-        "accountBalance": 155.65999999999997
-    },
     "1000011": {
-        "accountType": "Savings",
-        "accountBalance": 0
-    },
-    "1000012": {
         "accountType": "Chequing",
-        "accountBalance": 100
+        "accountBalance": 5000
     },
     "1000013": {
         "accountType": "Savings",
-        "accountBalance": 0
+        "accountBalance": 100
     },
     "1000014": {
         "accountType": "Chequing",
-        "accountBalance": 0
+        "accountBalance": 100
     },
-    "1000015": {
-        "accountType": "Chequing",
-        "accountBalance": 0
-    },
-    "1000016": {
-        "accountType": "Savings",
-        "accountBalance": 0
-    },
-    "lastID": 1000016
+    "lastID": 1000014
 }
