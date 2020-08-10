@@ -141,11 +141,14 @@ app.route('/login')
 app.post('/main', async (req, res) => { // open a new account route
     let accountType = req.body.typeofaccount; // store type of account selected
     var newAccNum = ++accounts.lastID; // store the number of the new account
-    console.log(accounts.lastID, newAccNum);
     const currClient = await Client.findOne({Username: req.userSession.username}); // find in the database account numbers related to this client
     try {
-        console.log(currClient[accountType]);
         if (currClient[accountType] === null) { // if the client does not have the type of account selected (null), create a new one based on selection
+            accounts[newAccNum] = { // add new account information to accounts.json to manage balance
+                "accountType": accountType,
+                "accountBalance": 0.00
+            };
+            data.writeData(accounts, './accounts.json');
             if (accountType == 'Chequing') {
                 req.userSession.chequing = newAccNum; // store acc number in the user session to appear in the dropdown menu
                 try { // create and store chequings account related to this client
@@ -163,12 +166,6 @@ app.post('/main', async (req, res) => { // open a new account route
                     console.error(error);
                 }
             }
-            accounts[newAccNum] = { // add new account information to accounts.json to manage balance
-                "accountType": accountType,
-                "accountBalance": 0.00
-            };
-            data.writeData(accounts, './accounts.json');
-
             res.render('bankMain', { // display main page confirming that new account was created
             accountCreated: true,
             activeUser: req.userSession.username,
