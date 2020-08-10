@@ -1,15 +1,19 @@
 {
     "1000011": {
         "accountType": "Chequing",
-        "accountBalance": 5000
+        "accountBalance": 1500
     },
     "1000013": {
         "accountType": "Savings",
         "accountBalance": 100
     },
-    "1000014": {
+    "1000015": {
         "accountType": "Chequing",
-        "accountBalance": 100
+        "accountBalance": 0
     },
-    "lastID": 1000014
+    "1000016": {
+        "accountType": "Savings",
+        "accountBalance": 0
+    },
+    "lastID": 1000016
 }
