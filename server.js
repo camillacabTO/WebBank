@@ -138,23 +138,23 @@ app.route('/login')
     }
 });
 
-app.post('/main', async (req, res) => {
-    let accountType = req.body.typeofaccount;
-    var newAccNum = ++accounts.lastID;
+app.post('/main', async (req, res) => { // open a new account route
+    let accountType = req.body.typeofaccount; // store type of account selected
+    var newAccNum = ++accounts.lastID; // store the number of the new account
     console.log(accounts.lastID, newAccNum);
-    const currClient = await Client.findOne({Username: req.userSession.username});
+    const currClient = await Client.findOne({Username: req.userSession.username}); // find in the database account numbers related to this client
     try {
         console.log(currClient[accountType]);
-        if (currClient[accountType] === null) {
+        if (currClient[accountType] === null) { // if the client does not have the type of account selected (null), create a new one based on selection
             if (accountType == 'Chequing') {
-                req.userSession.chequing = newAccNum;
-                try {
+                req.userSession.chequing = newAccNum; // store acc number in the user session to appear in the dropdown menu
+                try { // create and store chequings account related to this client
                     await Client.findByIdAndUpdate(currClient.id, { Chequing: newAccNum });
                     await Client.save();
                 } catch (error) {
                     console.error(error);
                 }
-            } else {
+            } else { // create and store savings account related to this client
                 req.userSession.savings = newAccNum;
                 try {
                     await Client.findByIdAndUpdate(currClient.id, { Savings: newAccNum });
@@ -163,13 +163,13 @@ app.post('/main', async (req, res) => {
                     console.error(error);
                 }
             }
-            accounts[newAccNum] = {
+            accounts[newAccNum] = { // add new account information to accounts.json to manage balance
                 "accountType": accountType,
                 "accountBalance": 0.00
             };
             data.writeData(accounts, './accounts.json');
 
-            res.render('bankMain', { 
+            res.render('bankMain', { // display main page confirming that new account was created
             accountCreated: true,
             activeUser: req.userSession.username,
             createdAccountNumber: newAccNum,
@@ -177,7 +177,7 @@ app.post('/main', async (req, res) => {
             Savings: req.userSession.savings,
             accountType,
             });
-        } else {
+        } else { // if client already have account selected, display alert
             res.render('openaccount', { accAlreadyExists: true, accountType });
         }
     } catch (error) {
@@ -187,6 +187,3 @@ app.post('/main', async (req, res) => {
 app.listen(PORT, function() {
     console.log(`Listening on port ${PORT}`);
 });
-
-// add remmaning comments
-// test it out more

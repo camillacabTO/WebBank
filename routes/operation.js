@@ -1,15 +1,10 @@
 const express = require('express');
-// const bodyParser = require('body-parser');
 const router = express.Router();
 const data = require('../dataManager');
 
 let activeAcc = '';
 let accNum;
 const accounts = data.readData('./accounts.json');
-
-// const app = express();
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
 
 // POST to /operation
 router.post('/', (req, res) => {
@@ -49,7 +44,7 @@ router.post('/', (req, res) => {
     }
 });
 
-router.post('/d', (req, res) => {
+router.post('/d', (req, res) => { // make deposit
     let amount = parseFloat(req.body.depositAmount);
     activeAcc.accountBalance += amount;
 
@@ -61,10 +56,10 @@ router.post('/d', (req, res) => {
     }); 
 });
 
-router.post('/w', (req, res) => {
+router.post('/w', (req, res) => { 
     let amount = parseFloat(req.body.withdrawalAmount);
 
-    if (amount <= activeAcc.accountBalance) {
+    if (amount <= activeAcc.accountBalance) { // only allow withdrawals if the amount is less than what is available (balance)
         activeAcc.accountBalance -= amount;
         data.writeData(accounts, './accounts.json');
         res.render('bankMain', { 
@@ -72,7 +67,7 @@ router.post('/w', (req, res) => {
             Chequing: req.userSession.chequing,
             Savings: req.userSession.savings
         });
-    } else {
+    } else { // if withdrawal amount is higher than balance, show message
         res.render('withdrawal', { 
             insufficientFunds: true,
             accNumber: accNum
