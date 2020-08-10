@@ -149,6 +149,7 @@ app.post('/main', async (req, res) => { // open a new account route
                 "accountBalance": 0.00
             };
             data.writeData(accounts, './accounts.json');
+
             if (accountType == 'Chequing') {
                 req.userSession.chequing = newAccNum; // store acc number in the user session to appear in the dropdown menu
                 try { // create and store chequings account related to this client
