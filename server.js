@@ -89,7 +89,7 @@ app.route('/register')
             } catch (error) {
                 console.error(error);
             }
-          }
+        }
     } else {
         // email already registered
         res.render('register', { doesExist: true }); 
@@ -154,7 +154,6 @@ app.post('/main', async (req, res) => { // open a new account route
                 req.userSession.chequing = newAccNum; // store acc number in the user session to appear in the dropdown menu
                 try { // create and store chequings account related to this client
                     await Client.findByIdAndUpdate(currClient.id, { Chequing: newAccNum });
-                    await Client.save();
                 } catch (error) {
                     console.error(error);
                 }
@@ -162,7 +161,6 @@ app.post('/main', async (req, res) => { // open a new account route
                 req.userSession.savings = newAccNum;
                 try {
                     await Client.findByIdAndUpdate(currClient.id, { Savings: newAccNum });
-                    await Client.save();
                 } catch (error) {
                     console.error(error);
                 }

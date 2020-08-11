@@ -15,17 +15,5 @@
         "accountType": "Savings",
         "accountBalance": 0
     },
-    "1000017": {
-        "accountType": "Chequing",
-        "accountBalance": 200
-    },
-    "1000018": {
-        "accountType": "Chequing",
-        "accountBalance": 0
-    },
-    "1000019": {
-        "accountType": "Savings",
-        "accountBalance": 0
-    },
-    "lastID": 1000019
+    "lastID": 1000016
 }
