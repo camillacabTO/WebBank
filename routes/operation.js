@@ -1,14 +1,18 @@
 const express = require('express');
+const path = require('path');
 const router = express.Router();
-const data = require('../dataManager');
+// const data = require('../dataManager');
+const data = require(path.join(__dirname, '../dataManager'));
 
 let activeAcc = '';
 let accNum;
-const accounts = data.readData('./accounts.json');
+// const accounts = data.readData('./accounts.json');
+const accounts = data.readData(path.join(__dirname, '../accounts.json'));
 
 // POST to /operation
 router.post('/', (req, res) => {
     const op = req.body.operation;
+    console.log(accounts);
     accNum = req.body.accountNumber; // store account number selected (in the dropdown menu) to be used in the operations
     var doesAccExist = false;
 
