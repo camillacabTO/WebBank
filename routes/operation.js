@@ -5,21 +5,21 @@ const router = express.Router();
 const data = require(path.join(__dirname, '../dataManager'));
 
 let activeAcc = '';
-let accNum;
+let accNum = '';
 // const accounts = data.readData('./accounts.json');
-const accounts = data.readData(path.join(__dirname, '../accounts.json'));
+let accounts = data.readData(path.join(__dirname, '../accounts.json'));
 
 // POST to /operation
 router.post('/', (req, res) => {
     const op = req.body.operation;
-    console.log(accounts);
     accNum = req.body.accountNumber; // store account number selected (in the dropdown menu) to be used in the operations
     var doesAccExist = false;
-
-    if (accounts.hasOwnProperty(accNum)){ // confirming if account exists
+    accounts = data.readData(path.join(__dirname, '../accounts.json')); // read the latest version of accounts file
+    if (accounts.hasOwnProperty(accNum)) { // confirming if account exists
         doesAccExist = true;
         activeAcc = accounts[accNum]; // if exists pull information from this account and store in this variable
     }
+    console.log(`account number is ${accNum} and the doesAccExist is ${doesAccExist}`);
 
     if (op !== 'open-account' && doesAccExist) { // if account exists user can deposit, withdrawal or see balance
         switch (op) {
