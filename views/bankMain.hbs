@@ -3,20 +3,24 @@
 
     <nav class="navbar navbar-expand-lg mb-2 justify-content-center">
         <div class="form-check form-check-inline">
-            <input type="radio" class="form-check-input ml-5" id="balance" name="operation" value="balance">
-            <label class="form-check-label" for="balance">Balance</label>
+             <label class="form-check-label" for="balance">
+            <input type="radio" class="form-check-input ml-5" id="balance" name="operation" value="balance"> Balance
+            </label>
         </div>
         <div class="form-check form-check-inline">
-            <input type="radio" class="form-check-input ml-5" id="deposit"name="operation" value="deposit">
-            <label class="form-check-label" for="deposit">Deposit</label>
+            <label class="form-check-label" for="deposit">
+            <input type="radio" class="form-check-input ml-5" id="deposit"name="operation" value="deposit"> Deposit
+            </label>
         </div>
         <div class="form-check form-check-inline">
-            <input type="radio" class="form-check-input ml-5" id="open-account"name="operation" value="open-account">
-            <label class="form-check-label" for="open=account" aria-checked="true">Open an Account</label>
+            <label class="form-check-label" for="open=account" aria-checked="true">
+            <input type="radio" class="form-check-input ml-5" id="open-account" name="operation" value="open-account"> Open an Account
+            </label>
         </div>
         <div class="form-check form-check-inline">
-            <input type="radio" class="form-check-input ml-5" id="withdrawal"name="operation" value="withdrawal">
-            <label class="form-check-label" for="withdrawal">Withdrawal</label>
+            <label class="form-check-label" for="withdrawal">
+            <input type="radio" class="form-check-input ml-5" id="withdrawal"name="operation" value="withdrawal"> Withdrawal
+            </label>
         </div>
     </nav>
     <div class="clsUsernameLogout">
@@ -28,14 +32,14 @@
         </div>
     </div>
     <section class="justify-content-center">
-        <div class="form-group text-center">
+        <div class="form-group text-center mt-2">
             <label for="account-number-box">Select an Account</label>
             <select class="form-control d-block mx-auto" name="accountNumber" id="account-number-box">
                 <option value="{{Chequing}}">{{Chequing}}</option>
                 <option value="{{Savings}}">{{Savings}}</option>
             </select>
         </div>
-        <img src="/images/banklogo.png" alt="banklogo" class="mx-auto d-block my-4">
+        <img src="/images/finance1.svg" alt="banklogo" class="mx-auto d-block my-4">
         {{#if invalidAccount}}
             <div class="alert alert-danger text-center w-25 mx-auto">Invalid Account Number</div>
         {{/if}}
@@ -46,6 +50,6 @@
         {{/if}}
     </section>
     <div class="container">
-        <button type="submit" class="btn btn-outline-dark mx-auto d-block">Submit</button>
+        <button type="submit" class="btn btn-outline-dark mx-auto d-block my-3">Submit</button>
     </div>
 </form>

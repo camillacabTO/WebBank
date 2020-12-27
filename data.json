@@ -10,5 +10,17 @@
     {
         "email": "luketest@gmail.com",
         "password": "09876543"
+    },
+    {
+        "email": "ana@email.com",
+        "password": "12345678"
+    },
+    {
+        "email": "millacab3@gmail.com",
+        "password": "12345678"
+    },
+    {
+        "email": "test@test1.com",
+        "password": "12345678"
     }
 ]
