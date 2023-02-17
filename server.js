@@ -211,6 +211,6 @@ app.post('/main', async (req, res) => {
   }
 })
 
-app.listen(PORT, function () {
-  console.log(`Listening on port ${PORT}`)
+app.listen(process.env.PORT, function () {
+  console.log(`Listening on port ${process.env.PORT}`)
 })
